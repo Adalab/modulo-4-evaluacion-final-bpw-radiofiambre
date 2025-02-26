@@ -45,12 +45,12 @@ server.get('/allrecipes', async (req, res) => {
 
         if (result.length === 0) {
             res.status(404).json({
-                status: 'Error',
+                success: false,
                 message: 'No se han encontrado recetas'
             });
         } else {
             res.status(200).json({
-                status: 'Success',
+                success: true,
                 info: {
                     recipesFound: result.length
                 },
@@ -60,7 +60,7 @@ server.get('/allrecipes', async (req, res) => {
         
     } catch (error) {
         res.status(500).json({
-            status: 'Error',
+            success: false,
             message: error
         });
     };
@@ -81,12 +81,12 @@ server.get('/recipe/:recipeName', async (req, res) => {
         
         if (result.length === 0) {
             res.status(404).json({
-                status: 'Error',
+                success: false,
                 message: 'No se ha encontrado ninguna receta con ese nombre'
             });
         } else {
             res.status(200).json({
-                status: 'Success',
+                success: true,
                 info: {
                     recipesFound: result.length
                 },
@@ -96,7 +96,7 @@ server.get('/recipe/:recipeName', async (req, res) => {
 
     } catch (error) {
         res.status(500).json({
-            status: 'Error',
+            success: false,
             message: error
         });
     };
@@ -114,19 +114,19 @@ server.post('/createrecipe', async (req, res) => {
 
         if (result) {
             res.status(201).json({
-                status: 'Success',
+                success: true,
                 recipeId: result.insertId
             });
         } else {
             res.status(400).json({
-                status: 'Error',
+                success: false,
                 message: 'No se ha podido crear la receta'
             });
         }
         
     } catch (error) {
         res.status(500).json({
-            status: 'Error',
+            success: false,
             message: error
         });
     };
@@ -134,6 +134,35 @@ server.post('/createrecipe', async (req, res) => {
 
 
 // MODIFICAR RECETA
+server.put('/recipe/:recipeID', async (req, res) => {
+    try {
+        const connection = await connectToDB();
+        const {recipeID} = req.params;
+        const {creationDate, recipeName, category, pax, cookingTimeMin, ingredients, steps, notes, referenceLink, isFavorite, cookedTimes} = req.body;
+        const updateRecipeQuery = 'UPDATE cookbook_db.recipes SET creationDate = ?, recipeName = ?, category = ?, pax = ?, cookingTimeMin = ?, ingredients = ?, steps = ?, notes = ?, referenceLink = ?, isFavorite = ?, cookedTimes = ? WHERE id = ?';
+
+        const [result] = await connection.query(updateRecipeQuery, [creationDate, recipeName, category, pax, cookingTimeMin, ingredients, steps, notes, referenceLink, isFavorite, cookedTimes, recipeID]);
+        connection.end();
+        
+        if (result.affectedRows > 0) {
+            res.status(200).json({
+                success: true,
+                message: 'Se ha modificado la receta'
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                message: 'Ha ocurrido un error'
+            });
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error
+        });
+    };
+});
 
 
 // ELIMINAR RECETA
