@@ -67,7 +67,37 @@ server.get('/allrecipes', async (req, res) => {
 });
 
 
-// LEER RECETA
+// BUSCAR UNA RECETA POR SU NOMBRE
+server.get('/recipe/:recipeName', async (req, res) => {
+    try {
+        const connection = await connectToDB();
+        const {recipeName} = req.params;
+        const searchRecipeByName = 'SELECT * FROM cookbook_db.recipes WHERE recipeName = ?';
+        const [result] = await connection.query(searchRecipeByName, [recipeName]);
+        connection.end();
+        
+        if (result.length === 0) {
+            res.status(404).json({
+                status: 'Error',
+                message: 'No se ha encontrado ninguna receta con ese nombre'
+            });
+        } else {
+            res.status(200).json({
+                status: 'Success',
+                info: {
+                    recipeCount: result.length
+                },
+                message: result[0]
+            });
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            status: 'Error',
+            message: error
+        });
+    }
+})
 
 
 // MODIFICAR RECETA

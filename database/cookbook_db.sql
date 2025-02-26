@@ -4,7 +4,7 @@ USE cookbook_db;
 CREATE TABLE recipes(
 	id INT auto_increment primary key,
 	creationDate date not null,
-	repiceName VARCHAR(50) not null unique,
+	recipeName VARCHAR(50) not null unique,
     category VARCHAR(20) not null,
     pax INT,
     cookingTimeMin INT,
