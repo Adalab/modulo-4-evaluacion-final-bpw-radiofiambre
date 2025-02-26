@@ -1,0 +1,29 @@
+// POST
+
+{
+    "creationDate": "2025-02-25T23:00:00.000Z",
+    "recipeName": "lentejas",
+    "category": "legumbres",
+    "pax": 2,
+    "cookingTimeMin": 120,
+    "ingredients": "lentejas, chorizo, morcilla, zanahoria, cebolla",
+    "steps": null,
+    "notes": null,
+    "referenceLink": null,
+    "isFavorite": 0,
+    "cookedTimes": 0
+}
+
+{
+  "creationDate": "2025-02-25",
+  "recipeName": "arroz con verduras",
+  "category": "arroz",
+  "pax": 2,
+  "cookingTimeMin": 30,
+  "ingredients": "arroz, salmón, calabacín, zanahoria, salsa de soja",
+  "steps": "cocer el arroz, sofreír la verdura y el salmón, desmenuzar y mezclarlo todo con salsa de soja",
+  "notes": "Decorar al gusto con cacahuetes picados",
+  "referenceLink": "null",
+  "isFavorite": 1,
+  "cookedTimes": 4
+}

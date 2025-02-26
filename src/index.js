@@ -25,7 +25,7 @@ async function connectToDB() {
     });
     await connection.connect();
     return connection;
-}
+};
 
 
 // CREAR EL PUERTO Y LE DECIMOS AL SERVIDOR QUE ESCUCHE A TRAVÉS DE ÉL
@@ -35,12 +35,12 @@ server.listen(PORT, () => {
 });
 
 
-// CREAR RECETA
+// BUSCAR TODAS LAS RECETAS
 server.get('/allrecipes', async (req, res) => {
     try {
         const connection = await connectToDB();
-        const selectAllRecipes = 'SELECT * FROM cookbook_db.recipes';
-        const [result] = await connection.query(selectAllRecipes);
+        const selectAllRecipesQuery = 'SELECT * FROM cookbook_db.recipes';
+        const [result] = await connection.query(selectAllRecipesQuery);
         connection.end();
 
         if (result.length === 0) {
@@ -52,28 +52,31 @@ server.get('/allrecipes', async (req, res) => {
             res.status(200).json({
                 status: 'Success',
                 info: {
-                    recipeCount: result.length
+                    recipesFound: result.length
                 },
                 message: result
             });
-        }
+        };
         
     } catch (error) {
         res.status(500).json({
             status: 'Error',
             message: error
         });
-    }
+    };
 });
 
 
 // BUSCAR UNA RECETA POR SU NOMBRE
+// V2. buscar con espacios
 server.get('/recipe/:recipeName', async (req, res) => {
     try {
         const connection = await connectToDB();
         const {recipeName} = req.params;
-        const searchRecipeByName = 'SELECT * FROM cookbook_db.recipes WHERE recipeName = ?';
-        const [result] = await connection.query(searchRecipeByName, [recipeName]);
+        const searchRecipeByNameQuery = 'SELECT * FROM cookbook_db.recipes WHERE recipeName LIKE ?';
+        const searchTerm = `%${recipeName}%`;
+
+        const [result] = await connection.query(searchRecipeByNameQuery, [searchTerm]);
         connection.end();
         
         if (result.length === 0) {
@@ -85,9 +88,9 @@ server.get('/recipe/:recipeName', async (req, res) => {
             res.status(200).json({
                 status: 'Success',
                 info: {
-                    recipeCount: result.length
+                    recipesFound: result.length
                 },
-                message: result[0]
+                message: result
             });
         }
 
@@ -96,8 +99,38 @@ server.get('/recipe/:recipeName', async (req, res) => {
             status: 'Error',
             message: error
         });
-    }
-})
+    };
+});
+
+
+// CREAR RECETA
+server.post('/createrecipe', async (req, res) => {
+    try {
+        const connection = await connectToDB();
+        const {creationDate, recipeName, category, pax, cookingTimeMin, ingredients, steps, notes, referenceLink, isFavorite, cookedTimes} = req.body;
+        const createRecipeQuery = 'INSERT INTO cookbook_db.recipes (creationDate, recipeName, category, pax, cookingTimeMin, ingredients, steps, notes, referenceLink, isFavorite, cookedTimes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const [result] = await connection.query(createRecipeQuery, [creationDate, recipeName, category, pax, cookingTimeMin, ingredients, steps, notes, referenceLink, isFavorite, cookedTimes]);
+        connection.end();
+
+        if (result) {
+            res.status(201).json({
+                status: 'Success',
+                recipeId: result.insertId
+            });
+        } else {
+            res.status(400).json({
+                status: 'Error',
+                message: 'No se ha podido crear la receta'
+            });
+        }
+        
+    } catch (error) {
+        res.status(500).json({
+            status: 'Error',
+            message: error
+        });
+    };
+});
 
 
 // MODIFICAR RECETA
