@@ -166,3 +166,29 @@ server.put('/recipe/:recipeID', async (req, res) => {
 
 
 // ELIMINAR RECETA
+server.delete('/recipe/:recipeID', async (req, res) => {
+    try {
+        const connection = await connectToDB();
+        const {recipeID} = req.params;
+        const deleteRecipeQuery = 'DELETE FROM cookbook_db.recipes WHERE id = ?';
+        const [result] = await connection.query(deleteRecipeQuery, [recipeID]);
+
+        if (result.affectedRows > 0) {
+            res.status(200).json({
+                success: true,
+                message: 'Se ha eliminado la receta'
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                message: 'Ha ocurrido un error'
+            });
+        }
+
+    } catch {
+        res.status(500).json({
+            success: false,
+            message: error
+        });
+    };
+});
