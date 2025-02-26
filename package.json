@@ -1,0 +1,19 @@
+{
+  "name": "repaso-intermedio",
+  "version": "1.0.0",
+  "description": "Resolución de dudas reutilizando 1.7 Use Effect del módulo de react",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.12.0"
+  }
+}
