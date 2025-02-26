@@ -14,7 +14,7 @@ server.use(cors());
 server.use(express.json());
 
 
-// FUNCIÓN CONEXIÓN A LA BD
+// FUNCIÓN DE CONEXIÓN A LA BD
 async function connectToDB() {
     const connection = await mysql.createConnection({
         host: process.env.HOST_DV,
@@ -24,7 +24,6 @@ async function connectToDB() {
         port: process.env.PORT
     });
     await connection.connect();
-    console.log(connection);
     return connection;
 }
 
@@ -34,3 +33,44 @@ const PORT = 4500;
 server.listen(PORT, () => {
     console.log(`Server is cooking at http:localhost:${PORT}`);
 });
+
+
+// CREAR RECETA
+server.get('/allrecipes', async (req, res) => {
+    try {
+        const connection = await connectToDB();
+        const selectAllRecipes = 'SELECT * FROM cookbook_db.recipes';
+        const [result] = await connection.query(selectAllRecipes);
+        connection.end();
+
+        if (result.length === 0) {
+            res.status(404).json({
+                status: 'Error',
+                message: 'No se han encontrado recetas'
+            });
+        } else {
+            res.status(200).json({
+                status: 'Success',
+                info: {
+                    recipeCount: result.length
+                },
+                message: result
+            });
+        }
+        
+    } catch (error) {
+        res.status(500).json({
+            status: 'Error',
+            message: error
+        });
+    }
+});
+
+
+// LEER RECETA
+
+
+// MODIFICAR RECETA
+
+
+// ELIMINAR RECETA
